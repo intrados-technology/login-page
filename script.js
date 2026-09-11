@@ -9,9 +9,10 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxteJu1b_okEFYv4jbSF
 const SHEET_ID    = '1Ep0ESBJb-QxzBfN2oxIAH0RFJOPvCsNb4NpvmyWOfDA';
 const SHEET_TAB   = 'Initial Screening';
 
-// home.html lives in this same repo/folder — relative link, no
-// separate hosting needed.
-const HOME_PAGE_URL = 'home.html';
+// Assessment-list is a SEPARATE repo from this one — if the actual
+// URL differs from the GitHub Pages default below (e.g. once a
+// custom domain path is set up for it), update this to match.
+const HOME_PAGE_URL = 'https://intrados-technology.github.io/Assessment-list/';
 
 const DOM = {
   landingSection: document.getElementById('landing-section'),
@@ -185,6 +186,7 @@ requiredFields.forEach(function(id) {
 });
 
 DOM.btnSubmitApp.addEventListener('click', async function() {
+  console.log('[IDS-APP-DEBUG] Submit clicked');
   DOM.btnSubmitApp.disabled = true;
   document.getElementById('btn-submit-text').textContent = 'Submitting...';
 
@@ -216,12 +218,14 @@ DOM.btnSubmitApp.addEventListener('click', async function() {
     longTermStayReason:   document.getElementById('app-staylong').value.trim(),
     nextRoleInterest:     document.getElementById('app-nextrole').value.trim()
   };
+  console.log('[IDS-APP-DEBUG] formData built:', formData);
 
   // ── Generate Reference ID (same pattern used across the whole system) ──
   const year = new Date().getFullYear();
   var referenceId = 'IDS/JOB/' + year + '/001';
 
   try {
+    console.log('[IDS-APP-DEBUG] Fetching last RefID from sheet:', SHEET_ID, SHEET_TAB);
     const query = encodeURIComponent('SELECT B LIMIT 1000');
     const feedUrl = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
       '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_TAB) + '&tq=' + query;
@@ -245,28 +249,37 @@ DOM.btnSubmitApp.addEventListener('click', async function() {
         }
       }
     }
+    console.log('[IDS-APP-DEBUG] RefID generated:', referenceId);
   } catch (err) {
-    console.warn('[IDS] Could not read Applications sheet for RefID:', err.message);
+    console.log('[IDS-APP-DEBUG] RefID generation FAILED:', err.message);
     referenceId = 'IDS/JOB/' + year + '/' + String(Date.now() % 100000).padStart(5, '0');
   }
 
   const submissionTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   // ── Submit to Apps Script (fire and forget, matches rest of system) ──
+  console.log('[IDS-APP-DEBUG] About to POST to SCRIPT_URL:', SCRIPT_URL);
   try {
-    await fetch(SCRIPT_URL, {
+    const postBody = JSON.stringify(Object.assign({
+      sheetName: 'Initial Screening',
+      referenceId: referenceId,
+      submissionTime: submissionTime
+    }, formData));
+    console.log('[IDS-APP-DEBUG] POST body:', postBody);
+
+    const fetchPromise = fetch(SCRIPT_URL, {
       method: 'POST', mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign({
-        sheetName: 'Initial Screening',
-        referenceId: referenceId,
-        submissionTime: submissionTime
-      }, formData))
+      body: postBody
     });
+    console.log('[IDS-APP-DEBUG] fetch() called, awaiting...');
+    await fetchPromise;
+    console.log('[IDS-APP-DEBUG] fetch() completed without throwing (no-cors — response is opaque, this only confirms no network-level error)');
   } catch (err) {
-    console.warn('[IDS] Application submission error:', err);
+    console.log('[IDS-APP-DEBUG] fetch() THREW:', err.message);
   }
 
+  console.log('[IDS-APP-DEBUG] Showing confirmation screen now');
   DOM.appRefId.textContent = referenceId;
   showSection(DOM.confSection);
 });
