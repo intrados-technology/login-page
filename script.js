@@ -9,10 +9,21 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxteJu1b_okEFYv4jbSF
 const SHEET_ID    = '1Ep0ESBJb-QxzBfN2oxIAH0RFJOPvCsNb4NpvmyWOfDA';
 const SHEET_TAB   = 'Initial Screening';
 
-// Assessment-list is a SEPARATE repo from this one — if the actual
-// URL differs from the GitHub Pages default below (e.g. once a
-// custom domain path is set up for it), update this to match.
+// Assessment-list is a SEPARATE repo — verification happens HERE on
+// login-page, and only on success do we redirect there. Assessment-list
+// itself has no login of its own; it trusts this redirect.
 const HOME_PAGE_URL = 'https://intrados-technology.github.io/Assessment-list/';
+
+// TEMPORARY — catches any uncaught error anywhere on the page and
+// writes it to the visible debug panel, so a crash is never silent
+// even if it happens before any debugLog() call runs.
+window.addEventListener('error', function(e) {
+  const panel = document.getElementById('debug-panel');
+  if (panel) {
+    if (panel.textContent.indexOf('Debug panel ready') === 0) panel.textContent = '';
+    panel.textContent += '[UNCAUGHT ERROR] ' + e.message + ' (at ' + e.filename + ':' + e.lineno + ')\n\n';
+  }
+});
 
 const DOM = {
   landingSection: document.getElementById('landing-section'),
@@ -49,6 +60,9 @@ DOM.btnShowApply.addEventListener('click', () => showSection(DOM.appSection));
 DOM.btnLoginBack.addEventListener('click', () => showSection(DOM.landingSection));
 
 // ── Login Flow ───────────────────────────────────────────────────
+// Verified fresh every time — no session is stored. On success we
+// simply navigate to Assessment-list, which has no gating logic of
+// its own; this verification IS the gate.
 function setLoginError(field, msg) {
   const errEl = field === 'refid' ? DOM.errLoginRefId : DOM.errLoginEmail;
   const inputEl = field === 'refid' ? DOM.loginRefId : DOM.loginEmail;
@@ -99,8 +113,6 @@ DOM.btnLogin.addEventListener('click', async function() {
     }
 
     if (remarks === 'approved') {
-      // Store session so subsequent pages (same origin) can auto-fill.
-      localStorage.setItem('ids_app_session', JSON.stringify({ refId: refId, email: email, fullName: fullName }));
       window.location.href = HOME_PAGE_URL;
       return;
     }
@@ -185,8 +197,18 @@ requiredFields.forEach(function(id) {
   });
 });
 
+function debugLog(...args) {
+  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
+  console.log(msg);
+  const panel = document.getElementById('debug-panel');
+  if (panel) {
+    if (panel.textContent.indexOf('Debug panel ready') === 0) panel.textContent = '';
+    panel.textContent += msg + '\n\n';
+  }
+}
+
 DOM.btnSubmitApp.addEventListener('click', async function() {
-  console.log('[IDS-APP-DEBUG] Submit clicked');
+  debugLog('[IDS-APP-DEBUG] Submit clicked');
   DOM.btnSubmitApp.disabled = true;
   document.getElementById('btn-submit-text').textContent = 'Submitting...';
 
@@ -218,14 +240,14 @@ DOM.btnSubmitApp.addEventListener('click', async function() {
     longTermStayReason:   document.getElementById('app-staylong').value.trim(),
     nextRoleInterest:     document.getElementById('app-nextrole').value.trim()
   };
-  console.log('[IDS-APP-DEBUG] formData built:', formData);
+  debugLog('[IDS-APP-DEBUG] formData built:', formData);
 
   // ── Generate Reference ID (same pattern used across the whole system) ──
   const year = new Date().getFullYear();
   var referenceId = 'IDS/JOB/' + year + '/001';
 
   try {
-    console.log('[IDS-APP-DEBUG] Fetching last RefID from sheet:', SHEET_ID, SHEET_TAB);
+    debugLog('[IDS-APP-DEBUG] Fetching last RefID from sheet:', SHEET_ID, SHEET_TAB);
     const query = encodeURIComponent('SELECT B LIMIT 1000');
     const feedUrl = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
       '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_TAB) + '&tq=' + query;
@@ -249,37 +271,37 @@ DOM.btnSubmitApp.addEventListener('click', async function() {
         }
       }
     }
-    console.log('[IDS-APP-DEBUG] RefID generated:', referenceId);
+    debugLog('[IDS-APP-DEBUG] RefID generated:', referenceId);
   } catch (err) {
-    console.log('[IDS-APP-DEBUG] RefID generation FAILED:', err.message);
+    debugLog('[IDS-APP-DEBUG] RefID generation FAILED:', err.message);
     referenceId = 'IDS/JOB/' + year + '/' + String(Date.now() % 100000).padStart(5, '0');
   }
 
   const submissionTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   // ── Submit to Apps Script (fire and forget, matches rest of system) ──
-  console.log('[IDS-APP-DEBUG] About to POST to SCRIPT_URL:', SCRIPT_URL);
+  debugLog('[IDS-APP-DEBUG] About to POST to SCRIPT_URL:', SCRIPT_URL);
   try {
     const postBody = JSON.stringify(Object.assign({
       sheetName: 'Initial Screening',
       referenceId: referenceId,
       submissionTime: submissionTime
     }, formData));
-    console.log('[IDS-APP-DEBUG] POST body:', postBody);
+    debugLog('[IDS-APP-DEBUG] POST body:', postBody);
 
     const fetchPromise = fetch(SCRIPT_URL, {
       method: 'POST', mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: postBody
     });
-    console.log('[IDS-APP-DEBUG] fetch() called, awaiting...');
+    debugLog('[IDS-APP-DEBUG] fetch() called, awaiting...');
     await fetchPromise;
-    console.log('[IDS-APP-DEBUG] fetch() completed without throwing (no-cors — response is opaque, this only confirms no network-level error)');
+    debugLog('[IDS-APP-DEBUG] fetch() completed without throwing (no-cors — response is opaque, this only confirms no network-level error)');
   } catch (err) {
-    console.log('[IDS-APP-DEBUG] fetch() THREW:', err.message);
+    debugLog('[IDS-APP-DEBUG] fetch() THREW:', err.message);
   }
 
-  console.log('[IDS-APP-DEBUG] Showing confirmation screen now');
+  debugLog('[IDS-APP-DEBUG] Showing confirmation screen now');
   DOM.appRefId.textContent = referenceId;
   showSection(DOM.confSection);
 });

@@ -41,11 +41,11 @@
       <div class="card-body">
         <div class="form-grid">
           <button id="btn-show-login" class="btn btn-outline" type="button" style="padding:14px; font-size:15px; width:100%; font-weight:600;">
-            Login with Reference ID
+            Already Applied for any Position?
           </button>
           <div style="text-align:center; color:var(--text-muted); font-size:13px; margin:2px 0;">Or</div>
           <button id="btn-show-apply" class="btn btn-outline" type="button" style="padding:14px; font-size:15px; width:100%; font-weight:600;">
-            Fresh Applicant — Start New Application
+            Fresh Applicant?
           </button>
         </div>
       </div>
@@ -296,6 +296,14 @@
     </div>
   </section>
   <!-- /#confirmation-section -->
+
+  <!-- TEMPORARY DEBUG PANEL — always visible regardless of which
+       section is showing, so debug output is never hidden behind a
+       section that stays display:none if something crashes early.
+       Remove once the submission issue is confirmed fixed. -->
+  <div id="debug-panel" style="margin-top:20px; padding:16px; background:#1a1a1a; color:#0f0; font-family:monospace; font-size:12px; border-radius:8px; max-height:400px; overflow-y:auto; white-space:pre-wrap; text-align:left;">
+    Debug panel ready. Submit an application to see step-by-step output here.
+  </div>
 
 </main>
 
