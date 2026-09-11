@@ -4,106 +4,305 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Intrados Design Studio – Candidate Portal</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(160deg, #f8f5ff 0%, #ffffff 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .wrap { max-width: 520px; width: 100%; }
-    .logo-row { display: flex; justify-content: center; margin-bottom: 28px; }
-    .logo-row img { height: 46px; }
-    h1 {
-      text-align: center;
-      color: #4E2E9A;
-      font-size: 26px;
-      margin-bottom: 8px;
-    }
-    .sub {
-      text-align: center;
-      color: #6B7280;
-      font-size: 14px;
-      margin-bottom: 36px;
-      line-height: 1.6;
-    }
-    .card {
-      display: block;
-      background: #fff;
-      border: 1.5px solid #ddd6fe;
-      border-radius: 14px;
-      padding: 20px 24px;
-      margin-bottom: 14px;
-      text-decoration: none;
-      box-shadow: 0 4px 16px rgba(108,63,197,0.06);
-      transition: all 0.18s ease;
-    }
-    .card:hover {
-      border-color: #6C3FC5;
-      box-shadow: 0 8px 24px rgba(108,63,197,0.15);
-      transform: translateY(-2px);
-    }
-    .card-title {
-      color: #4E2E9A;
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .card-desc { color: #6B7280; font-size: 13px; }
-    .arrow { color: #6C3FC5; font-size: 18px; }
-    footer {
-      text-align: center;
-      color: #9CA3AF;
-      font-size: 11px;
-      margin-top: 32px;
-    }
-  </style>
+  <title>Apply — Intrados Designs</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div class="wrap">
-
-    <div class="logo-row">
-      <img src="https://drive.google.com/thumbnail?id=15vrGO2Vyw49k9AzooJ2wT9TMJ8rXjgJm&sz=w400" alt="Intrados Design Studio" />
+<!-- ============================================================
+     SITE HEADER
+     ============================================================ -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <div class="logo-lockup" aria-label="Intrados Designs">
+      <img src="https://drive.google.com/thumbnail?id=15vrGO2Vyw49k9AzooJ2wT9TMJ8rXjgJm&sz=w400" alt="Intrados Designs" class="logo-image" />
     </div>
-
-    <h1>Candidate Assessment Portal</h1>
-    <p class="sub">
-      Please select the assessment your recruiter directed you to.<br/>
-      If you're unsure which one applies to you, check your invitation email.
-    </p>
-
-    <a class="card" href="https://intrados-technology.github.io/general-assessment/">
-      <div class="card-title">Test 1: General Assessment <span class="arrow">→</span></div>
-      <div class="card-desc">First-stage screening test — required for all candidates.</div>
-    </a>
-
-    <a class="card" href="https://intrados-technology.github.io/technical-fresh/">
-      <div class="card-title">Test 2: Technical Assessment – Freshers <span class="arrow">→</span></div>
-      <div class="card-desc">Technical drawing test for entry-level / fresher candidates. Only for Technical candidates.</div>
-    </a>
-
-    <a class="card" href="https://intrados-technology.github.io/technical-Experience/">
-      <div class="card-title">Test 2: Technical Assessment – Experienced <span class="arrow">→</span></div>
-      <div class="card-desc">Technical assessment for experienced candidates. Only for Technical candidates.</div>
-    </a>
-
-    <a class="card" href="https://intrados-technology.github.io/professional-nontech/">
-      <div class="card-title">Test 2: Professional Assessment <span class="arrow">→</span></div>
-      <div class="card-desc">Assessment for HR / Admin roles. Only for Non-Technical candidates.</div>
-    </a>
-
-    <footer>© Intrados Designs · Confidential Candidate Portal</footer>
-
   </div>
+</header>
 
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<main class="page-wrapper" role="main">
+
+  <!-- ──────────────────────────────────────────────────────────
+       SECTION 0: LANDING CHOICE — Login or Fresh Applicant
+       ────────────────────────────────────────────────────────── -->
+  <section id="landing-section" aria-label="Get Started">
+    <div class="card">
+      <div class="card-header">
+        <div class="reg-intro">
+          <span class="section-badge">📋 Job Application Portal</span>
+          <h1 class="reg-title">Welcome to Intrados Designs</h1>
+          <p class="reg-sub">Already applied? Log in below. New here? Start a fresh application.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <button id="btn-show-login" class="btn btn-outline" type="button" style="padding:14px; font-size:15px; width:100%; font-weight:600;">
+            Login with Reference ID
+          </button>
+          <div style="text-align:center; color:var(--text-muted); font-size:13px; margin:2px 0;">Or</div>
+          <button id="btn-show-apply" class="btn btn-outline" type="button" style="padding:14px; font-size:15px; width:100%; font-weight:600;">
+            Fresh Applicant — Start New Application
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /#landing-section -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       SECTION 1: LOGIN
+       ────────────────────────────────────────────────────────── -->
+  <section id="login-section" aria-label="Login" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="reg-intro">
+          <span class="section-badge">🔑 Login</span>
+          <h1 class="reg-title">Welcome Back</h1>
+          <p class="reg-sub">Enter the Reference ID and Email you used when you applied.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label class="form-label" for="login-refid">Reference ID <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="login-refid" class="form-input" autocomplete="off" aria-required="true" aria-describedby="err-login-refid" />
+            <span class="field-error" id="err-login-refid" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input type="email" id="login-email" class="form-input" autocomplete="off" aria-required="true" aria-describedby="err-login-email" />
+            <span class="field-error" id="err-login-email" role="alert" aria-live="polite"></span>
+          </div>
+
+          <button id="btn-login" class="btn-start" type="button">
+            <span>Log In</span>
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <button id="btn-login-back" class="btn btn-outline" type="button" style="padding:12px; font-size:14px; width:100%;">
+            ← Back
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /#login-section -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       SECTION 2: APPLICATION FORM
+       ────────────────────────────────────────────────────────── -->
+  <section id="application-section" aria-label="Job Application" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="reg-intro">
+          <span class="section-badge">📝 New Application</span>
+          <h1 class="reg-title">Tell Us About Yourself</h1>
+          <p class="reg-sub">Please fill in your details accurately. All fields marked * are required.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label class="form-label" for="app-fullname">Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="app-fullname" class="form-input" aria-required="true" aria-describedby="err-fullname" />
+            <span class="field-error" id="err-fullname" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-phone">Phone No. <span class="req" aria-hidden="true">*</span></label>
+            <input type="tel" id="app-phone" class="form-input" aria-required="true" aria-describedby="err-phone" />
+            <span class="field-error" id="err-phone" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-whatsapp">WhatsApp No. <span class="req" aria-hidden="true">*</span></label>
+            <input type="tel" id="app-whatsapp" class="form-input" aria-required="true" aria-describedby="err-whatsapp" />
+            <span class="field-error" id="err-whatsapp" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input type="email" id="app-email" class="form-input" aria-required="true" aria-describedby="err-email" />
+            <span class="field-error" id="err-email" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-location">Current Location <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="app-location" class="form-input" aria-required="true" aria-describedby="err-location" />
+            <span class="field-error" id="err-location" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-company">Current Company</label>
+            <input type="text" id="app-company" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-position">Which Position Are You Applying For? <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="app-position" class="form-input" aria-required="true" aria-describedby="err-position" />
+            <span class="field-error" id="err-position" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-domain">Domain <span class="req" aria-hidden="true">*</span></label>
+            <select id="app-domain" class="form-input" aria-required="true" aria-describedby="err-domain">
+              <option value="" disabled selected>Select one</option>
+              <option value="Technical">Technical</option>
+              <option value="Non-Technical">Non-Technical</option>
+            </select>
+            <span class="field-error" id="err-domain" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-totalexp">Total Years of Experience <span class="req" aria-hidden="true">*</span></label>
+            <input type="number" id="app-totalexp" class="form-input" min="0" step="0.5" aria-required="true" aria-describedby="err-totalexp" />
+            <span class="field-error" id="err-totalexp" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-relevantexp">Relevant Experience <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="app-relevantexp" class="form-input" aria-required="true" aria-describedby="err-relevantexp" placeholder="Describe your relevant experience" />
+            <span class="field-error" id="err-relevantexp" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-skills">Key Skills <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="app-skills" class="form-input" rows="3" aria-required="true" aria-describedby="err-skills"></textarea>
+            <span class="field-error" id="err-skills" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-employed">Currently Employed <span class="req" aria-hidden="true">*</span></label>
+            <select id="app-employed" class="form-input" aria-required="true" aria-describedby="err-employed">
+              <option value="" disabled selected>Select one</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <span class="field-error" id="err-employed" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-notice">Current Notice Period <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="app-notice" class="form-input" aria-required="true" aria-describedby="err-notice" placeholder="e.g. Immediate, 30 days" />
+            <span class="field-error" id="err-notice" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-joindate">When Can You Join Us? <span class="req" aria-hidden="true">*</span></label>
+            <input type="date" id="app-joindate" class="form-input" aria-required="true" aria-describedby="err-joindate" />
+            <span class="field-error" id="err-joindate" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-reasonchange">Why Are You Looking for a Change? <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="app-reasonchange" class="form-input" rows="3" aria-required="true" aria-describedby="err-reasonchange"></textarea>
+            <span class="field-error" id="err-reasonchange" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-currsalary">Current Salary</label>
+            <input type="text" id="app-currsalary" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-expsalary">Expected Salary <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="app-expsalary" class="form-input" aria-required="true" aria-describedby="err-expsalary" />
+            <span class="field-error" id="err-expsalary" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-negotiate">Are You Open to Negotiate? <span class="req" aria-hidden="true">*</span></label>
+            <select id="app-negotiate" class="form-input" aria-required="true" aria-describedby="err-negotiate">
+              <option value="" disabled selected>Select one</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <span class="field-error" id="err-negotiate" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-office5day">Comfortable Working 5 Days/Week From Our Office? <span class="req" aria-hidden="true">*</span></label>
+            <select id="app-office5day" class="form-input" aria-required="true" aria-describedby="err-office5day">
+              <option value="" disabled selected>Select one</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <span class="field-error" id="err-office5day" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-otheroffers">Do You Have Any Other Offers Currently? <span class="req" aria-hidden="true">*</span></label>
+            <select id="app-otheroffers" class="form-input" aria-required="true" aria-describedby="err-otheroffers">
+              <option value="" disabled selected>Select one</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <span class="field-error" id="err-otheroffers" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-staylong">What Makes You Stay With a Company for a Long Term? <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="app-staylong" class="form-input" rows="3" aria-required="true" aria-describedby="err-staylong"></textarea>
+            <span class="field-error" id="err-staylong" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="app-nextrole">What Are You Looking for in Your Next Role, and Why Are You Interested in Joining Us? <span class="req" aria-hidden="true">*</span></label>
+            <textarea id="app-nextrole" class="form-input" rows="4" aria-required="true" aria-describedby="err-nextrole"></textarea>
+            <span class="field-error" id="err-nextrole" role="alert" aria-live="polite"></span>
+          </div>
+
+          <button id="btn-submit-application" class="btn-start" type="button" disabled>
+            <span id="btn-submit-icon">🔒</span>
+            <span id="btn-submit-text">Fill all required fields to continue</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /#application-section -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       SECTION 3: CONFIRMATION
+       ────────────────────────────────────────────────────────── -->
+  <section id="confirmation-section" aria-label="Application Submitted" style="display:none;">
+    <div class="card">
+      <div class="card-body" style="text-align:center;">
+        <div style="font-size:48px; margin-bottom:16px;">✅</div>
+        <h2 class="confirm-title">Your Application Is Submitted Successfully</h2>
+        <p class="confirm-note">
+          We will review your application and get back to you once it has been approved.
+        </p>
+        <div class="ref-id-block" style="margin:24px auto;">
+          <span class="ref-label">Your Reference ID</span>
+          <span class="ref-id" id="app-ref-id">—</span>
+        </div>
+        <p class="confirm-note">
+          <strong>Please save this Reference ID and the email you applied with</strong> — you'll need both to log in once your application is approved.
+        </p>
+      </div>
+    </div>
+  </section>
+  <!-- /#confirmation-section -->
+
+</main>
+
+<footer style="text-align:center; padding:24px; color:var(--text-muted); font-size:13px;">
+  © Intrados Designs · Confidential Candidate Portal
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
