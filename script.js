@@ -113,7 +113,7 @@ DOM.btnLogin.addEventListener('click', async function() {
     }
 
     if (remarks === 'approved') {
-      window.location.href = HOME_PAGE_URL;
+      window.location.href = HOME_PAGE_URL + '?ref=' + encodeURIComponent(refId) + '&email=' + encodeURIComponent(email);
       return;
     }
 
