@@ -14,17 +14,6 @@ const SHEET_TAB   = 'Initial Screening';
 // itself has no login of its own; it trusts this redirect.
 const HOME_PAGE_URL = 'https://intrados-technology.github.io/Assessment-list/';
 
-// TEMPORARY — catches any uncaught error anywhere on the page and
-// writes it to the visible debug panel, so a crash is never silent
-// even if it happens before any debugLog() call runs.
-window.addEventListener('error', function(e) {
-  const panel = document.getElementById('debug-panel');
-  if (panel) {
-    if (panel.textContent.indexOf('Debug panel ready') === 0) panel.textContent = '';
-    panel.textContent += '[UNCAUGHT ERROR] ' + e.message + ' (at ' + e.filename + ':' + e.lineno + ')\n\n';
-  }
-});
-
 const DOM = {
   landingSection: document.getElementById('landing-section'),
   loginSection:   document.getElementById('login-section'),
@@ -197,18 +186,7 @@ requiredFields.forEach(function(id) {
   });
 });
 
-function debugLog(...args) {
-  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
-  console.log(msg);
-  const panel = document.getElementById('debug-panel');
-  if (panel) {
-    if (panel.textContent.indexOf('Debug panel ready') === 0) panel.textContent = '';
-    panel.textContent += msg + '\n\n';
-  }
-}
-
 DOM.btnSubmitApp.addEventListener('click', async function() {
-  debugLog('[IDS-APP-DEBUG] Submit clicked');
   DOM.btnSubmitApp.disabled = true;
   document.getElementById('btn-submit-text').textContent = 'Submitting...';
 
@@ -240,14 +218,12 @@ DOM.btnSubmitApp.addEventListener('click', async function() {
     longTermStayReason:   document.getElementById('app-staylong').value.trim(),
     nextRoleInterest:     document.getElementById('app-nextrole').value.trim()
   };
-  debugLog('[IDS-APP-DEBUG] formData built:', formData);
 
   // ── Generate Reference ID (same pattern used across the whole system) ──
   const year = new Date().getFullYear();
   var referenceId = 'IDS/JOB/' + year + '/001';
 
   try {
-    debugLog('[IDS-APP-DEBUG] Fetching last RefID from sheet:', SHEET_ID, SHEET_TAB);
     const query = encodeURIComponent('SELECT B LIMIT 1000');
     const feedUrl = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
       '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(SHEET_TAB) + '&tq=' + query;
@@ -271,37 +247,28 @@ DOM.btnSubmitApp.addEventListener('click', async function() {
         }
       }
     }
-    debugLog('[IDS-APP-DEBUG] RefID generated:', referenceId);
   } catch (err) {
-    debugLog('[IDS-APP-DEBUG] RefID generation FAILED:', err.message);
+    console.warn('[IDS] Could not read Initial Screening sheet for RefID:', err.message);
     referenceId = 'IDS/JOB/' + year + '/' + String(Date.now() % 100000).padStart(5, '0');
   }
 
   const submissionTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   // ── Submit to Apps Script (fire and forget, matches rest of system) ──
-  debugLog('[IDS-APP-DEBUG] About to POST to SCRIPT_URL:', SCRIPT_URL);
   try {
-    const postBody = JSON.stringify(Object.assign({
-      sheetName: 'Initial Screening',
-      referenceId: referenceId,
-      submissionTime: submissionTime
-    }, formData));
-    debugLog('[IDS-APP-DEBUG] POST body:', postBody);
-
-    const fetchPromise = fetch(SCRIPT_URL, {
+    await fetch(SCRIPT_URL, {
       method: 'POST', mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: postBody
+      body: JSON.stringify(Object.assign({
+        sheetName: 'Initial Screening',
+        referenceId: referenceId,
+        submissionTime: submissionTime
+      }, formData))
     });
-    debugLog('[IDS-APP-DEBUG] fetch() called, awaiting...');
-    await fetchPromise;
-    debugLog('[IDS-APP-DEBUG] fetch() completed without throwing (no-cors — response is opaque, this only confirms no network-level error)');
   } catch (err) {
-    debugLog('[IDS-APP-DEBUG] fetch() THREW:', err.message);
+    console.warn('[IDS] Application submission error:', err);
   }
 
-  debugLog('[IDS-APP-DEBUG] Showing confirmation screen now');
   DOM.appRefId.textContent = referenceId;
   showSection(DOM.confSection);
 });
