@@ -5,7 +5,7 @@
 
 'use strict';
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxteJu1b_okEFYv4jbSF4Ne55bOfBsyIiIx3tnAVHq833I1f7c7aGcn7VVck--VI_a8tg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby15wP3oi93fLm4zfRbikU0E8sHsNkbj_gYztWeFL_eKaoos0WPjWjNyKxnarLijKDIOg/exec";
 const SHEET_ID    = '1Ep0ESBJb-QxzBfN2oxIAH0RFJOPvCsNb4NpvmyWOfDA';
 const SHEET_TAB   = 'Initial Screening';
 
