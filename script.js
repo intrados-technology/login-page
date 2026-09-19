@@ -19,6 +19,9 @@ const DOM = {
   loginSection:   document.getElementById('login-section'),
   appSection:     document.getElementById('application-section'),
   confSection:    document.getElementById('confirmation-section'),
+  reviewerLoginSection: document.getElementById('reviewer-login-section'),
+  reviewerChangePasswordSection: document.getElementById('reviewer-change-password-section'),
+  reviewerDashboardSection: document.getElementById('reviewer-dashboard-section'),
 
   btnShowLogin: document.getElementById('btn-show-login'),
   btnShowApply: document.getElementById('btn-show-apply'),
@@ -40,6 +43,9 @@ function showSection(section) {
   DOM.loginSection.style.display   = 'none';
   DOM.appSection.style.display     = 'none';
   DOM.confSection.style.display    = 'none';
+  DOM.reviewerLoginSection.style.display = 'none';
+  DOM.reviewerChangePasswordSection.style.display = 'none';
+  DOM.reviewerDashboardSection.style.display = 'none';
   section.style.display = 'block';
   window.scrollTo(0, 0);
 }
@@ -47,6 +53,249 @@ function showSection(section) {
 DOM.btnShowLogin.addEventListener('click', () => showSection(DOM.loginSection));
 DOM.btnShowApply.addEventListener('click', () => showSection(DOM.appSection));
 DOM.btnLoginBack.addEventListener('click', () => showSection(DOM.landingSection));
+
+document.getElementById('btn-reviewer-login').addEventListener('click', () => showSection(DOM.reviewerLoginSection));
+document.getElementById('btn-reviewer-back').addEventListener('click', () => showSection(DOM.landingSection));
+
+// ── Reviewer Login ───────────────────────────────────────────────
+// Checked server-side via Apps Script (doGet action=reviewerLogin),
+// NOT via the public gviz sheet-read pattern used elsewhere in this
+// system — that keeps the "Reviewers" sheet's contents (including
+// passwords) from ever being exposed through a publicly queryable
+// endpoint.
+function reviewerGvizFetch(actionParams, onSuccess, onFail) {
+  const callbackName = 'idsReviewerCallback_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+  let settled = false;
+
+  const cleanup = function() {
+    delete window[callbackName];
+    const tag = document.getElementById(callbackName);
+    if (tag) tag.remove();
+    clearTimeout(timeoutRef);
+  };
+
+  const timeoutRef = setTimeout(function() {
+    if (settled) return;
+    settled = true;
+    cleanup();
+    onFail('Could not reach the login service. Check your connection and try again.');
+  }, 12000);
+
+  window[callbackName] = function(response) {
+    if (settled) return;
+    settled = true;
+    cleanup();
+    onSuccess(response);
+  };
+
+  const query = Object.keys(actionParams).map(function(k) {
+    return encodeURIComponent(k) + '=' + encodeURIComponent(actionParams[k]);
+  }).join('&');
+
+  const url = SCRIPT_URL + '?' + query + '&callback=' + callbackName;
+
+  const script = document.createElement('script');
+  script.id = callbackName;
+  script.src = url;
+  script.onerror = function() {
+    if (settled) return;
+    settled = true;
+    cleanup();
+    onFail('Could not reach the login service. Please try again.');
+  };
+  document.body.appendChild(script);
+}
+
+function setReviewerError(msg) {
+  const el = document.getElementById('reviewer-login-error');
+  el.textContent = msg || '';
+  el.style.display = msg ? 'block' : 'none';
+}
+
+// Holds the currently-logging-in reviewer's identity across the
+// login → (optional) change-password → dashboard flow.
+const reviewerSession = { email: '', password: '', name: '' };
+
+document.getElementById('btn-reviewer-submit').addEventListener('click', function() {
+  const email = document.getElementById('reviewer-email').value.trim();
+  const password = document.getElementById('reviewer-password').value;
+  setReviewerError('');
+
+  if (!email || !password) {
+    setReviewerError('Please enter both email and password.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-reviewer-submit');
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Logging in...';
+
+  reviewerGvizFetch(
+    { action: 'reviewerLogin', email: email, password: password },
+    function(response) {
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Log In';
+      if (response && response.success) {
+        reviewerSession.email    = email;
+        reviewerSession.password = password;
+        reviewerSession.name     = response.name || 'Reviewer';
+
+        if (response.mustChangePassword) {
+          showSection(DOM.reviewerChangePasswordSection);
+        } else {
+          document.getElementById('reviewer-welcome-heading').textContent =
+            'Welcome, ' + reviewerSession.name;
+          showSection(DOM.reviewerDashboardSection);
+          loadReviewerDashboard();
+        }
+      } else {
+        setReviewerError('Incorrect email or password.');
+      }
+    },
+    function(errMsg) {
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Log In';
+      setReviewerError(errMsg);
+    }
+  );
+});
+
+// ── Mandatory Change Password (first login only) ──────────────────
+function setReviewerChangeError(msg) {
+  const el = document.getElementById('reviewer-change-error');
+  el.textContent = msg || '';
+  el.style.display = msg ? 'block' : 'none';
+}
+
+document.getElementById('btn-reviewer-change-password').addEventListener('click', function() {
+  const newPassword     = document.getElementById('reviewer-new-password').value;
+  const confirmPassword = document.getElementById('reviewer-confirm-password').value;
+  setReviewerChangeError('');
+
+  if (!newPassword || !confirmPassword) {
+    setReviewerChangeError('Please fill in both fields.');
+    return;
+  }
+  if (newPassword.length < 6) {
+    setReviewerChangeError('Password must be at least 6 characters.');
+    return;
+  }
+  if (newPassword !== confirmPassword) {
+    setReviewerChangeError('Passwords do not match.');
+    return;
+  }
+  if (newPassword === reviewerSession.password) {
+    setReviewerChangeError('Please choose a different password from your current one.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-reviewer-change-password');
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Saving...';
+
+  reviewerGvizFetch(
+    {
+      action: 'reviewerChangePassword',
+      email: reviewerSession.email,
+      currentPassword: reviewerSession.password,
+      newPassword: newPassword
+    },
+    function(response) {
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Set Password & Continue';
+      if (response && response.success) {
+        reviewerSession.password = newPassword;
+        document.getElementById('reviewer-welcome-heading').textContent =
+          'Welcome, ' + reviewerSession.name;
+        showSection(DOM.reviewerDashboardSection);
+        loadReviewerDashboard();
+      } else {
+        setReviewerChangeError('Something went wrong. Please try again.');
+      }
+    },
+    function(errMsg) {
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Set Password & Continue';
+      setReviewerChangeError(errMsg);
+    }
+  );
+});
+
+// ── Reviewer Dashboard: candidate list ────────────────────────────
+// Generic gviz select-query helper against the main assessment
+// spreadsheet (public read, same as everywhere else in this system —
+// this is candidate data, not reviewer credentials, so there's no
+// sensitivity concern here).
+async function gvizSelect(sheetTab, query) {
+  const url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+    '/gviz/tq?tqx=out:json&sheet=' + encodeURIComponent(sheetTab) +
+    '&tq=' + encodeURIComponent(query);
+  const resp = await fetch(url);
+  const text = await resp.text();
+  const start = text.indexOf('{');
+  const end   = text.lastIndexOf('}');
+  const json  = JSON.parse(text.substring(start, end + 1));
+  return (json && json.table && json.table.rows) || [];
+}
+
+async function loadReviewerDashboard() {
+  const loadingEl = document.getElementById('reviewer-candidates-loading');
+  const emptyEl   = document.getElementById('reviewer-candidates-empty');
+  const groupEl   = document.getElementById('reviewer-candidates-group');
+  const selectEl  = document.getElementById('reviewer-candidate-select');
+  const btnProceed = document.getElementById('btn-reviewer-proceed');
+
+  loadingEl.style.display = 'block';
+  emptyEl.style.display = 'none';
+  groupEl.style.display = 'none';
+  btnProceed.style.display = 'none';
+  selectEl.innerHTML = '';
+
+  try {
+    // B=Reference ID, C=Name, P=Total Score (blank until a reviewer
+    // has actually scored that candidate's rubric).
+    const rows = await gvizSelect('Tool Test', 'select B,C,P');
+
+    if (!rows || rows.length === 0) {
+      loadingEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+      return;
+    }
+
+    rows.forEach(function(row) {
+      const cells = row.c;
+      const refId = cells[0] && cells[0].v ? String(cells[0].v).trim() : '';
+      const name  = cells[1] && cells[1].v ? String(cells[1].v).trim() : '';
+      const totalScore = cells[2] && cells[2].v !== null && cells[2].v !== '' ? cells[2].v : null;
+      if (!refId || !name) return;
+
+      const reviewed = totalScore !== null;
+      const option = document.createElement('option');
+      option.value = refId;
+      option.textContent = name + (reviewed ? ' (Review Completed)' : '');
+      option.disabled = reviewed;
+      selectEl.appendChild(option);
+    });
+
+    const firstEnabled = Array.from(selectEl.options).find(function(o) { return !o.disabled; });
+    if (firstEnabled) selectEl.value = firstEnabled.value;
+
+    loadingEl.style.display = 'none';
+    groupEl.style.display = 'block';
+    btnProceed.style.display = 'flex';
+    btnProceed.disabled = !firstEnabled;
+
+  } catch (err) {
+    console.warn('[IDS] Reviewer dashboard load error:', err);
+    loadingEl.textContent = 'Something went wrong loading candidates. Please refresh and try again.';
+  }
+}
+
+document.getElementById('reviewer-candidate-select').addEventListener('change', function() {
+  const btnProceed = document.getElementById('btn-reviewer-proceed');
+  const selected = this.options[this.selectedIndex];
+  btnProceed.disabled = !selected || selected.disabled;
+});
 
 // ── Login Flow ───────────────────────────────────────────────────
 // Verified fresh every time — no session is stored. On success we

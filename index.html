@@ -17,6 +17,9 @@
     <div class="logo-lockup" aria-label="Intrados Designs">
       <img src="https://drive.google.com/thumbnail?id=15vrGO2Vyw49k9AzooJ2wT9TMJ8rXjgJm&sz=w400" alt="Intrados Designs" class="logo-image" />
     </div>
+    <button id="btn-reviewer-login" class="reviewer-login-link" type="button">
+      Reviewer Login →
+    </button>
   </div>
 </header>
 
@@ -52,6 +55,123 @@
     </div>
   </section>
   <!-- /#landing-section -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       SECTION: REVIEWER LOGIN
+       ────────────────────────────────────────────────────────── -->
+  <section id="reviewer-login-section" aria-label="Reviewer Login" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="reg-intro">
+          <span class="section-badge">🔐 Reviewer Login</span>
+          <h1 class="reg-title">Reviewer Access</h1>
+          <p class="reg-sub">Log in with your reviewer email and password.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label class="form-label" for="reviewer-email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input type="email" id="reviewer-email" class="form-input" autocomplete="username" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reviewer-password">Password <span class="req" aria-hidden="true">*</span></label>
+            <input type="password" id="reviewer-password" class="form-input" autocomplete="current-password" />
+          </div>
+
+          <button id="btn-reviewer-submit" class="btn-start" type="button">
+            <span>Log In</span>
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <p class="error-msg-reviewer" id="reviewer-login-error" style="display:none; color:var(--danger); font-size:13px; text-align:center;"></p>
+
+          <button id="btn-reviewer-back" class="btn btn-outline" type="button" style="padding:12px; font-size:14px; width:100%;">
+            ← Back
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /#reviewer-login-section -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       SECTION: MANDATORY CHANGE PASSWORD (first login only)
+       ────────────────────────────────────────────────────────── -->
+  <section id="reviewer-change-password-section" aria-label="Change Password" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="reg-intro">
+          <span class="section-badge">🔑 Change Password</span>
+          <h1 class="reg-title">Set a New Password</h1>
+          <p class="reg-sub">You're using the initial password given by your admin. Please set your own password to continue.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label class="form-label" for="reviewer-new-password">New Password <span class="req" aria-hidden="true">*</span></label>
+            <input type="password" id="reviewer-new-password" class="form-input" autocomplete="new-password" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reviewer-confirm-password">Confirm New Password <span class="req" aria-hidden="true">*</span></label>
+            <input type="password" id="reviewer-confirm-password" class="form-input" autocomplete="new-password" />
+          </div>
+
+          <button id="btn-reviewer-change-password" class="btn-start" type="button">
+            <span>Set Password & Continue</span>
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <p class="error-msg-reviewer" id="reviewer-change-error" style="display:none; color:var(--danger); font-size:13px; text-align:center;"></p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /#reviewer-change-password-section -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       SECTION: REVIEWER DASHBOARD
+       ────────────────────────────────────────────────────────── -->
+  <section id="reviewer-dashboard-section" aria-label="Reviewer Dashboard" style="display:none;">
+    <div class="card">
+      <div class="card-header">
+        <div class="reg-intro">
+          <span class="section-badge">📋 Reviewer Dashboard</span>
+          <h1 class="reg-title" id="reviewer-welcome-heading">Welcome, Reviewer</h1>
+          <p class="reg-sub">Select a candidate who has completed the Tool Test to review their submission.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+
+          <p id="reviewer-candidates-loading" class="reg-sub" style="text-align:center;">Loading candidates...</p>
+          <p id="reviewer-candidates-empty" class="reg-sub" style="text-align:center; display:none;">No candidates have completed the Tool Test yet.</p>
+
+          <div id="reviewer-candidates-group" class="form-group" style="display:none;">
+            <label class="form-label" for="reviewer-candidate-select">Candidate</label>
+            <select id="reviewer-candidate-select" class="form-input"></select>
+          </div>
+
+          <button id="btn-reviewer-proceed" class="btn-start" type="button" disabled style="display:none;">
+            <span>Review Candidate</span>
+            <span aria-hidden="true">→</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /#reviewer-dashboard-section -->
 
 
   <!-- ──────────────────────────────────────────────────────────

@@ -88,6 +88,21 @@ h1,h2,h3 { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
   grid-column: 2;
 }
 
+.reviewer-login-link {
+  grid-column: 3;
+  justify-self: end;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: var(--transition);
+}
+.reviewer-login-link:hover { color: var(--primary); }
+
 .logo-image {
   height: 56px;
   width: auto;
