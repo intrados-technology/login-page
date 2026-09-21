@@ -5,7 +5,17 @@
 
 'use strict';
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby15wP3oi93fLm4zfRbikU0E8sHsNkbj_gYztWeFL_eKaoos0WPjWjNyKxnarLijKDIOg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxteJu1b_okEFYv4jbSF4Ne55bOfBsyIiIx3tnAVHq833I1f7c7aGcn7VVck--VI_a8tg/exec";
+
+// Reviewer login runs on a COMPLETELY SEPARATE Apps Script project
+// from everything else on this page (application submission, RefID
+// lookups) — see reviewer_login_apps_script.gs. This isolation means
+// future reviewer-only changes never require touching SCRIPT_URL
+// above, and never risk any of the other assessment pages that also
+// share SCRIPT_URL.
+// ⚠️ REQUIRED SETUP: replace with the Web app URL from deploying
+// reviewer_login_apps_script.gs as its own standalone project.
+const REVIEWER_SCRIPT_URL = "PASTE_REVIEWER_SCRIPT_URL_HERE";
 const SHEET_ID    = '1Ep0ESBJb-QxzBfN2oxIAH0RFJOPvCsNb4NpvmyWOfDA';
 const SHEET_TAB   = 'Initial Screening';
 
@@ -92,7 +102,7 @@ function reviewerGvizFetch(actionParams, onSuccess, onFail) {
     return encodeURIComponent(k) + '=' + encodeURIComponent(actionParams[k]);
   }).join('&');
 
-  const url = SCRIPT_URL + '?' + query + '&callback=' + callbackName;
+  const url = REVIEWER_SCRIPT_URL + '?' + query + '&callback=' + callbackName;
 
   const script = document.createElement('script');
   script.id = callbackName;
